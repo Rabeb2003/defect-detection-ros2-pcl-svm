@@ -27,9 +27,9 @@ Visualization Manager:
   Class: ""
   Displays:
     - Alpha: 0.5
-      Cell Size: 0.5
+      Cell Size: 0.1
       Class: rviz_default_plugins/Grid
-      Color: 100; 100; 100
+      Color: 200; 200; 200
       Enabled: true
       Line Style:
         Line Width: 0.03
@@ -41,7 +41,7 @@ Visualization Manager:
         Y: 0
         Z: 0
       Plane: XY
-      Plane Cell Count: 20
+      Plane Cell Count: 50
       Reference Frame: <Fixed Frame>
       Value: true
     - Class: rviz_default_plugins/TF
