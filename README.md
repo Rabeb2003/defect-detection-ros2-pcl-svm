@@ -218,27 +218,6 @@ Le node `cloud_publisher` génère des nuages de points synthétiques avec :
 
 ![Visualisation RViz](rviz2_detect.png)
 
-## 🔬 Pour Mitacs
-
-### Proposition de projet
-
-**Titre** : Système de Vision 3D Intelligent pour l'Inspection Automatisée de Pièces Manufacturées en Temps Réel
-
-**Objectifs** :
-- Réduction des coûts de contrôle qualité de 40%
-- Inspection en temps réel (< 1 seconde/pièce)
-- Précision de détection > 95%
-
-**Partenaires potentiels** :
-- Bombardier (aéronautique)
-- Stellantis (automobile)
-- Celestica (électronique)
-
-**Timeline** : 4 mois
-- Mois 1 : Acquisition et prétraitement
-- Mois 2 : Registration CAD
-- Mois 3 : Segmentation et classification
-- Mois 4 : Intégration et déploiement
 
 ## 📝 Structure du projet
 
