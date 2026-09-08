@@ -4,6 +4,7 @@ from launch.actions import DeclareLaunchArgument, TimerAction
 from launch.substitutions import LaunchConfiguration
 from launch.conditions import IfCondition
 from ament_index_python.packages import get_package_share_directory
+from launch_ros.actions import StaticTransformPublisher
 import os
 
 
@@ -18,6 +19,14 @@ def generate_launch_description():
     # Get package directory
     pkg_dir = get_package_share_directory('defect_detection')
     config_file = os.path.join(pkg_dir, 'config', 'defect_detection_params.yaml')
+    
+    # Static TF publisher for base_link
+    static_tf = StaticTransformPublisher(
+        frame_id='map',
+        child_frame_id='base_link',
+        translation=[0.0, 0.0, 0.0],
+        rotation=[0.0, 0.0, 0.0, 1.0]
+    )
     
     # Cloud publisher node (simulated data)
     cloud_publisher = Node(
@@ -67,7 +76,9 @@ def generate_launch_description():
     
     return LaunchDescription([
         enable_rviz_arg,
-        # Start publisher first
+        # Start TF first
+        static_tf,
+        # Start publisher
         cloud_publisher,
         # Start detection node after publisher
         TimerAction(period=2.0, actions=[defect_detection_node]),
