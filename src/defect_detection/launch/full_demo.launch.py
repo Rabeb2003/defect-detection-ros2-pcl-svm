@@ -1,10 +1,10 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from launch.actions import DeclareLaunchArgument, TimerAction
+from launch.actions import DeclareLaunchArgument, TimerAction, RegisterEventHandler
+from launch.event_handlers import OnProcessStart
 from launch.substitutions import LaunchConfiguration
 from launch.conditions import IfCondition
 from ament_index_python.packages import get_package_share_directory
-from launch_ros.actions import StaticTransformPublisher
 import os
 
 
@@ -20,12 +20,12 @@ def generate_launch_description():
     pkg_dir = get_package_share_directory('defect_detection')
     config_file = os.path.join(pkg_dir, 'config', 'defect_detection_params.yaml')
     
-    # Static TF publisher for base_link
-    static_tf = StaticTransformPublisher(
-        frame_id='map',
-        child_frame_id='base_link',
-        translation=[0.0, 0.0, 0.0],
-        rotation=[0.0, 0.0, 0.0, 1.0]
+    # Static TF publisher node using tf2_ros
+    static_tf_node = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='static_tf_publisher',
+        arguments=['--frame-id', 'map', '--child-frame-id', 'base_link']
     )
     
     # Cloud publisher node (simulated data)
@@ -77,7 +77,7 @@ def generate_launch_description():
     return LaunchDescription([
         enable_rviz_arg,
         # Start TF first
-        static_tf,
+        static_tf_node,
         # Start publisher
         cloud_publisher,
         # Start detection node after publisher
