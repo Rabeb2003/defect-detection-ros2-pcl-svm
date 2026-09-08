@@ -1,0 +1,68 @@
+# ROS2 build artifacts
+build/
+install/
+log/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# PCL
+*.pcd.bak
+
+# Compiled Object files
+*.o
+*.ko
+*.obj
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+
+# Compiled Static libraries
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Model files (large binary files - optional to ignore)
+# data/svm_model.xml
+# data/training/*.pcd
+
+# Nested git repositories
+data/PCL_Classification/

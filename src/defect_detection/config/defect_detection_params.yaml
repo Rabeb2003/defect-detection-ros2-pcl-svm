@@ -1,0 +1,49 @@
+defect_detection_node:
+  ros__parameters:
+    # CAD model path (leave empty to skip registration)
+    cad_model_path: ""
+    
+    # Registration method
+    use_icp: true
+    
+    # Enable defect classification
+    enable_classification: true
+    
+    # Publish visualization markers
+    publish_markers: true
+    
+    # SVM model path
+    svm_model_path: "/home/rabeb/defect_detection_ws/data/svm_model.xml"
+    use_svm: true
+    
+    # Point Cloud Acquisition Parameters
+    outlier_mean_k: 50.0
+    outlier_std_thresh: 1.0
+    voxel_leaf_size: 0.01
+    enable_filtering: true
+    
+    # CAD Registration Parameters
+    icp_max_correspondence_distance: 0.05
+    icp_max_iterations: 50
+    icp_transformation_epsilon: 0.00000001
+    icp_euclidean_fitness_epsilon: 0.000001
+    ndt_resolution: 0.1
+    ndt_max_iterations: 35
+    ndt_step_size: 0.1
+    
+    # Defect Segmentation Parameters
+    plane_distance_threshold: 0.01
+    plane_ransac_max_iterations: 100
+    cluster_tolerance: 0.02
+    min_cluster_size: 100
+    max_cluster_size: 25000
+    normal_search_radius: 0.05
+    curvature_threshold: 0.1
+    
+    # Defect Classification Parameters
+    fpfh_radius_search: 0.05
+    normal_radius_search: 0.05
+    scratch_curvature_threshold: 0.5
+    dent_depth_threshold: 0.02
+    crack_length_threshold: 0.1
+    deformation_deviation_threshold: 0.05
