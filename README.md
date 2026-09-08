@@ -111,10 +111,21 @@ ros2 run defect_detection defect_detector
 ros2 run rviz2 rviz2
 ```
 
-### Lancement avec launch file
+### Lancement avec launch file (recommandé)
 
 ```bash
-ros2 launch defect_detection defect_detection.launch.py
+# Lancer sans RViz pour éviter les problèmes Wayland/XWayland
+ros2 launch defect_detection full_demo.launch.py enable_rviz:=false
+
+# Puis lancer RViz séparément
+rviz2
+```
+
+### Lancement complet avec RViz (si pas de problème Wayland)
+
+```bash
+# Forcer le backend Qt xcb pour éviter les bugs de rendu
+QT_QPA_PLATFORM=xcb ros2 launch defect_detection full_demo.launch.py
 ```
 
 ### Avec modèle CAD
@@ -196,6 +207,16 @@ Le node `cloud_publisher` génère des nuages de points synthétiques avec :
 - **Types de défauts** : 5 classes (normal, dent, bulge, scratch, crack)
 - **Détection en temps réel** : ~10 nuages/seconde
 - **Features extraites** : 8 dimensions géométriques
+
+## 🎬 Démonstration
+
+### Détection de défauts en temps réel
+
+![Détection de défauts](input_detect.png)
+
+### Visualisation RViz
+
+![Visualisation RViz](rviz2_detect.png)
 
 ## 🔬 Pour Mitacs
 
