@@ -255,24 +255,3 @@ defect_detection_ws/
 └── test_system.sh         # Script de test
 ```
 
-## 🛠️ Développement futur
-
-- [ ] Intégration deep learning pour classification
-- [ ] Support de capteurs réels (LiDAR, caméras depth)
-- [ ] Interface web pour visualisation
-- [ ] Base de données pour traçabilité
-- [ ] Intégration MES/ERP
-
-## 📄 Licence
-
-BSD 3-Clause
-
-## 👥 Auteurs
-
-Développé pour projet Mitacs - Détection de défauts Industrie 4.0
-
-## 🙏 Remerciements
-
-- Point Cloud Library (PCL)
-- ROS2 Humble
-- Open Perception
