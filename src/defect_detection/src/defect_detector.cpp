@@ -60,65 +60,79 @@ private:
     void processCloud(const sensor_msgs::msg::PointCloud2::SharedPtr msg) {
         RCLCPP_INFO(this->get_logger(), "Processing point cloud...");
         
-        // Step 1: Acquire and preprocess
-        auto processed_cloud = acquisition_->processPointCloud(msg);
-        if (!processed_cloud || processed_cloud->empty()) {
-            RCLCPP_WARN(this->get_logger(), "Empty cloud after preprocessing");
-            return;
-        }
-        
-        // Step 2: Register to CAD model
-        pcl::PointCloud<pcl::PointXYZ>::Ptr registered_cloud;
-        if (!cad_model_path_.empty()) {
-            if (use_icp_) {
-                registered_cloud = registration_->registerICP(processed_cloud);
-            } else {
-                registered_cloud = registration_->registerNDT(processed_cloud);
+        try {
+            // Step 1: Acquire and preprocess
+            auto processed_cloud = acquisition_->processPointCloud(msg);
+            if (!processed_cloud || processed_cloud->empty()) {
+                RCLCPP_WARN(this->get_logger(), "Empty cloud after preprocessing");
+                return;
+            }
+            RCLCPP_INFO(this->get_logger(), "Cloud preprocessed: %zu points", processed_cloud->size());
+            
+            // Step 2: Register to CAD model
+            pcl::PointCloud<pcl::PointXYZ>::Ptr registered_cloud;
+            if (!cad_model_path_.empty()) {
+                if (use_icp_) {
+                    registered_cloud = registration_->registerICP(processed_cloud);
+                } else {
+                    registered_cloud = registration_->registerNDT(processed_cloud);
+                }
+                
+                if (registered_cloud && registration_->getRegistrationError() < 0.1) {
+                    processed_cloud = registered_cloud;
+                    RCLCPP_INFO(this->get_logger(), "Registration successful, error: %f", 
+                               registration_->getRegistrationError());
+                } else {
+                    RCLCPP_WARN(this->get_logger(), "Registration failed, using original cloud");
+                }
             }
             
-            if (registered_cloud && registration_->getRegistrationError() < 0.1) {
-                processed_cloud = registered_cloud;
-                RCLCPP_INFO(this->get_logger(), "Registration successful, error: %f", 
-                           registration_->getRegistrationError());
-            } else {
-                RCLCPP_WARN(this->get_logger(), "Registration failed, using original cloud");
+            // Step 3: Segment defects
+            RCLCPP_INFO(this->get_logger(), "Starting defect segmentation...");
+            auto defect_regions = segmentation_->segmentDefects(processed_cloud);
+            RCLCPP_INFO(this->get_logger(), "Segmentation complete, found %zu regions", defect_regions.size());
+            
+            if (defect_regions.empty()) {
+                RCLCPP_INFO(this->get_logger(), "No defects detected");
+                publishProcessedCloud(processed_cloud);
+                return;
             }
-        }
-        
-        // Step 3: Segment defects
-        auto defect_regions = segmentation_->segmentDefects(processed_cloud);
-        
-        if (defect_regions.empty()) {
-            RCLCPP_INFO(this->get_logger(), "No defects detected");
+            
+            RCLCPP_INFO(this->get_logger(), "Detected %zu potential defects", defect_regions.size());
+            
+            // Step 4: Classify defects
+            if (enable_classification_) {
+                RCLCPP_INFO(this->get_logger(), "Starting defect classification...");
+                std::vector<DefectInfo> defect_infos;
+                for (const auto& region : defect_regions) {
+                    RCLCPP_INFO(this->get_logger(), "Classifying region with %zu points", region.cloud->size());
+                    defect_infos.push_back(classifier_->classifyDefect(region.cloud));
+                }
+                
+                RCLCPP_INFO(this->get_logger(), "Classification complete, %zu defects classified", defect_infos.size());
+                
+                // Publish results
+                publishDefectResults(defect_infos);
+                
+                if (publish_markers_) {
+                    RCLCPP_INFO(this->get_logger(), "Publishing markers...");
+                    publishDefectMarkers(defect_infos);
+                }
+            } else {
+                // Publish raw defect regions
+                std::string result_msg = "Detected " + std::to_string(defect_regions.size()) + " defect regions";
+                auto msg_result = std_msgs::msg::String();
+                msg_result.data = result_msg;
+                defect_pub_->publish(msg_result);
+            }
+            
+            // Publish processed cloud
             publishProcessedCloud(processed_cloud);
-            return;
-        }
-        
-        RCLCPP_INFO(this->get_logger(), "Detected %zu potential defects", defect_regions.size());
-        
-        // Step 4: Classify defects
-        if (enable_classification_) {
-            std::vector<DefectInfo> defect_infos;
-            for (const auto& region : defect_regions) {
-                defect_infos.push_back(classifier_->classifyDefect(region.cloud));
-            }
+            RCLCPP_INFO(this->get_logger(), "Cloud processing complete");
             
-            // Publish results
-            publishDefectResults(defect_infos);
-            
-            if (publish_markers_) {
-                publishDefectMarkers(defect_infos);
-            }
-        } else {
-            // Publish raw defect regions
-            std::string result_msg = "Detected " + std::to_string(defect_regions.size()) + " defect regions";
-            auto msg_result = std_msgs::msg::String();
-            msg_result.data = result_msg;
-            defect_pub_->publish(msg_result);
+        } catch (const std::exception& e) {
+            RCLCPP_ERROR(this->get_logger(), "Exception during cloud processing: %s", e.what());
         }
-        
-        // Publish processed cloud
-        publishProcessedCloud(processed_cloud);
     }
     
     void publishDefectResults(const std::vector<DefectInfo>& defect_infos) {
