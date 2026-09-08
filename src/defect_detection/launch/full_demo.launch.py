@@ -2,6 +2,7 @@ from launch import LaunchDescription
 from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument, TimerAction
 from launch.substitutions import LaunchConfiguration
+from launch.conditions import IfCondition
 from ament_index_python.packages import get_package_share_directory
 import os
 
@@ -61,7 +62,7 @@ def generate_launch_description():
         name='rviz2',
         output='screen',
         arguments=['-d', os.path.join(pkg_dir, 'config', 'defect_detection.rviz')],
-        condition=LaunchConfiguration('enable_rviz')
+        condition=IfCondition(LaunchConfiguration('enable_rviz'))
     )
     
     return LaunchDescription([
