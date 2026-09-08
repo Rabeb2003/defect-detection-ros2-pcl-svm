@@ -24,19 +24,19 @@ defect_detection_node:
     
     # CAD Registration Parameters
     icp_max_correspondence_distance: 0.05
-    icp_max_iterations: 50
+    icp_max_iterations: 50.0
     icp_transformation_epsilon: 0.00000001
     icp_euclidean_fitness_epsilon: 0.000001
     ndt_resolution: 0.1
-    ndt_max_iterations: 35
+    ndt_max_iterations: 35.0
     ndt_step_size: 0.1
     
     # Defect Segmentation Parameters
     plane_distance_threshold: 0.01
-    plane_ransac_max_iterations: 100
+    plane_ransac_max_iterations: 100.0
     cluster_tolerance: 0.02
-    min_cluster_size: 100
-    max_cluster_size: 25000
+    min_cluster_size: 100.0
+    max_cluster_size: 25000.0
     normal_search_radius: 0.05
     curvature_threshold: 0.1
     

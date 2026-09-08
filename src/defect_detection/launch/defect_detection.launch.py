@@ -49,6 +49,11 @@ def generate_launch_description():
                 'use_icp': LaunchConfiguration('use_icp'),
                 'enable_classification': LaunchConfiguration('enable_classification'),
                 'publish_markers': LaunchConfiguration('publish_markers'),
+                'icp_max_iterations': 50.0,
+                'ndt_max_iterations': 35.0,
+                'plane_ransac_max_iterations': 100.0,
+                'min_cluster_size': 100.0,
+                'max_cluster_size': 25000.0,
             }
         ],
         remappings=[
